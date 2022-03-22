@@ -1,0 +1,9 @@
+{
+  "Id": "EternalCreatureTest",
+  "DisplayName": "Eterna's Creature Test",
+  "Author": "eterna light",
+  "Version": "0.1",
+  "Enable": false,
+  "AssemblyName": "EternalCreatureTest.dll",
+  "Game": "Subnautica"
+}

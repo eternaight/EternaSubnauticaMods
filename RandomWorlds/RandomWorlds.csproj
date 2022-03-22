@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{98A42FDD-B34F-4435-BF07-3C25A4EB1D51}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RandomWorlds</RootNamespace>
+    <AssemblyName>RandomWorlds</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;RUNTIME_GENERATION</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Subnautica\BepInEx\core\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass_publicized">
+      <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\publicized_assemblies\Assembly-CSharp-firstpass_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp_publicized">
+      <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="QModInstaller">
+      <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Subnautica\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
+    </Reference>
+    <Reference Include="SMLHelper">
+      <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Games\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BiomemapGenerator.cs" />
+    <Compile Include="CaveVoxelFilter.cs" />
+    <Compile Include="DeserializerOverrideInterfaces.cs" />
+    <Compile Include="EntitySpawnManager.cs" />
+    <Compile Include="MiscPatches\RandomStartPatch.cs" />
+    <Compile Include="NoiseAdventures\INoiseFilter3D.cs" />
+    <Compile Include="NoiseAdventures\NoiseWorm.cs" />
+    <Compile Include="OctreeGen\EternalOctree.cs" />
+    <Compile Include="OctreeGen\WorldOctrees.cs" />
+    <Compile Include="Patches\BatchOctreesPatch.cs" />
+    <Compile Include="Patches\CellManagerPatch.cs" />
+    <Compile Include="Patches\EntityCellDebugPatch.cs" />
+    <Compile Include="Patches\LargeWorldBiomeMapPatch.cs" />
+    <Compile Include="Patches\LargeWorldStreamerPatch.cs" />
+    <Compile Include="Patches\MeshBuilderPatch.cs" />
+    <Compile Include="NoiseAdventures\CaveNoiseFilter.cs" />
+    <Compile Include="NoiseAdventures\FractalNoiseFilter.cs" />
+    <Compile Include="NoiseAdventures\INoiseFilter2D.cs" />
+    <Compile Include="NoiseAdventures\Noise.cs" />
+    <Compile Include="NoiseAdventures\NoiseUtils.cs" />
+    <Compile Include="NoiseAdventures\RidgidNoiseFilter.cs" />
+    <Compile Include="Patches\PAXTerrainControllerPatch.cs" />
+    <Compile Include="Patches\ProtobufSerializerInstantiationPatch.cs" />
+    <Compile Include="Patches\ProtobufSerializerPatch.cs" />
+    <Compile Include="PathPatches\PAXTerrainControllerPathPatch.cs" />
+    <Compile Include="RandomWorldsJournalist.cs" />
+    <Compile Include="WorldManager.cs" />
+    <Compile Include="RandomWorlds.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomWorldsOptions.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="HeightmapVoxelFilter.cs" />
+    <Compile Include="WorldGenerator.cs" />
+    <Compile Include="WorldSerializer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="mod.json" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "C:\Games\Steam\steamapps\common\Subnautica\QMods\$(TargetName)"
+copy /Y "$(TargetPath)" "C:\Games\Steam\steamapps\common\Subnautica\QMods\$(TargetName)"
+copy /Y "$(ProjectDir)\mod.json" "C:\Games\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\mod.json"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

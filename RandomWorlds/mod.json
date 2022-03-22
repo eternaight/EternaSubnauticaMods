@@ -1,0 +1,9 @@
+{
+  "Id": "RandomWorlds",
+  "DisplayName": "Eterna's Random Worlds",
+  "Author": "eterna light",
+  "Version": "0.1",
+  "Enable": false,
+  "AssemblyName": "RandomWorlds.dll",
+  "Game": "Subnautica"
+}

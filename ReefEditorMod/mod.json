@@ -1,0 +1,9 @@
+{
+  "Id": "ReefEditorMod",
+  "DisplayName": "Reef Editor Mod",
+  "Author": "eterna light",
+  "Version": "0.1",
+  "Enable": true,
+  "AssemblyName": "ReefEditorMod.dll",
+  "Game": "Subnautica"
+}
