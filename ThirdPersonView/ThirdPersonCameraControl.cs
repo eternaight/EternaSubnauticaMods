@@ -25,6 +25,8 @@ namespace ThirdPersonView {
         private Vector3 pdaOffset;
         private Vector3 cameraHalfExtends;
 
+        public static bool cameraToPlayerManagerOverride;
+
         private bool _cinematicMode;
         public bool CinematicMode { get {
                 return _cinematicMode;
@@ -74,19 +76,22 @@ namespace ThirdPersonView {
 
         private bool pilotingCyclops;
 
-        private static bool _insideTightSpace = false;
-        public static bool InsideTightSpace {
-            get {
-                return _insideTightSpace;
-            }
-            set {
-                if (value == _insideTightSpace) return;
-                if (main.config.switchToFirstPersonWhenInside) {
-                    MainCameraControl.main.enabled = value;
-                    main.enabled = !value;
-                    _insideTightSpace = value;
-                }
-            }
+        private bool _insideTightSpace = false;
+        public void SetInsideTightSpace(bool value) {
+            if (value == _insideTightSpace) return;
+            if (cameraToPlayerManagerOverride) return;
+            
+            _insideTightSpace = value;
+            
+            value &= config.switchToFirstPersonWhenInside;
+            MainCameraControl.main.enabled = value;
+            main.enabled = !value;
+        }
+
+        public void RefreshTightSpaceStatus() {
+            bool value = _insideTightSpace && config.switchToFirstPersonWhenInside;
+            MainCameraControl.main.enabled = value;
+            main.enabled = !value;
         }
 
         private void OnEnable() {
@@ -177,10 +182,10 @@ namespace ThirdPersonView {
             Vector3 lookDirection = lookRotation * Vector3.forward;
 
             if (_inVehicle) {
-                if (Player.main.IsInSub()) lookPosition = focusPoint + -lookDirection * (currentDistance = config.cyclopsDistance);
-                else lookPosition = focusPoint + -lookDirection * (currentDistance = config.vehicleDistance);
+                if (Player.main.IsInSub()) lookPosition = focusPoint - lookDirection * SmoothMoveToDistance(config.cyclopsDistance);
+                else lookPosition = focusPoint - lookDirection * SmoothMoveToDistance(config.vehicleDistance);
             } else {
-                lookPosition = focusPoint + -lookDirection * (currentDistance = config.swimDistance);
+                lookPosition = focusPoint - lookDirection * config.swimDistance;
 
                 Vector3 rectOffset = lookDirection * Camera.main.nearClipPlane;
                 Vector3 rectPosition = lookPosition + rectOffset;
@@ -190,9 +195,10 @@ namespace ThirdPersonView {
                 Vector3 castDirection = castLine / castDistance;
 
                 if (Physics.BoxCast(castFrom, cameraHalfExtends, castDirection, out var hit, lookRotation, castDistance, obstructionMask)) {
-                    currentDistance = hit.distance;
-                    rectPosition = castFrom + castDirection * currentDistance;
+                    rectPosition = castFrom + castDirection * SmoothMoveToDistance(hit.distance);
                     lookPosition = rectPosition - rectOffset;
+                } else {
+                    lookPosition = focusPoint - lookDirection * SmoothMoveToDistance(config.swimDistance);
                 }
             }
 
@@ -200,6 +206,11 @@ namespace ThirdPersonView {
             if (!CinematicMode) {
                 UpdateViewModel();
             }
+        }
+
+        private float SmoothMoveToDistance(float newDistance) {
+            currentDistance = Mathf.MoveTowards(currentDistance, newDistance, Time.deltaTime * config.cameraDistanceDelta);
+            return currentDistance;
         }
 
         private void Update_PDA() {

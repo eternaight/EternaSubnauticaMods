@@ -15,11 +15,20 @@ namespace ThirdPersonView {
         [Slider("Radius of camera sphere (piloting cyclops)", 1, 10, DefaultValue = 1)]
         public float cyclopsDistance = 1;
 
-        [Toggle("Switch to first person in bases/cyclops")]
+        [Toggle("Switch to first person in bases/cyclops"), OnChange(nameof(OnFirstPersonInBaseChange))]
         public bool switchToFirstPersonWhenInside = true;
+
+        private void OnFirstPersonInBaseChange() {
+            if (ThirdPersonCameraControl.main != null) {
+                ThirdPersonCameraControl.main.RefreshTightSpaceStatus();
+            }
+        }
 
         [Slider("Sensitivity (deg/s)", 1, 180, DefaultValue = 90)]
         public float rotationSpeed = 90;
+
+        [Slider("Camera distance change speed (m/s)", 0.1f, 10, DefaultValue = 5)]
+        public float cameraDistanceDelta = 5;
 
         [Slider("Focus area radius", 0, 1.5f, DefaultValue = 0.4f)]
         public float focusRadius = 0.4f;
@@ -32,18 +41,5 @@ namespace ThirdPersonView {
 
         [Slider("Range of camera alignment (deg)", 0, 90, DefaultValue = 45)]
         public float alignSmoothRange = 45f;
-
-        [Button("Set Defaults")]
-        public void SetDefaults() {
-            focusRadius = 0.4f;
-            focusCentering = 0.7f;
-            rotationSpeed = 90;
-            alignDelay = 3;
-            alignSmoothRange = 45f;
-            swimDistance = 3;
-            vehicleDistance = 6;
-            cyclopsDistance = 1;
-            switchToFirstPersonWhenInside = true;
-        }
     }
 }

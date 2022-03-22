@@ -5,6 +5,7 @@ namespace ThirdPersonView {
     class CameraToPlayerManager_EnableHeadCameraControllerPatch {
         [HarmonyPostfix]
         public static void Postfix() {
+            ThirdPersonCameraControl.cameraToPlayerManagerOverride = true;
             ThirdPersonCameraControl.main.enabled = false;
         }
     }
@@ -14,6 +15,7 @@ namespace ThirdPersonView {
         public static void Postfix() {
             MainCameraControl.main.enabled = false;
             ThirdPersonCameraControl.main.enabled = true;
+            ThirdPersonCameraControl.cameraToPlayerManagerOverride = false;
         }
     }
 }

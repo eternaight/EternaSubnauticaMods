@@ -15,7 +15,7 @@ namespace ThirdPersonView {
 
         [HarmonyPostfix]
         public static void Postfix(Player __instance) {
-            ThirdPersonCameraControl.InsideTightSpace = (__instance.IsInBase() || __instance.IsInSubmarine());
+            ThirdPersonCameraControl.main.SetInsideTightSpace(__instance.IsInBase() || __instance.IsInSubmarine());
         }
     }
 }
