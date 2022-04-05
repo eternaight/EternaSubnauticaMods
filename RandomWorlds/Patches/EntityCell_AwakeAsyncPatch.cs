@@ -4,15 +4,13 @@ using System.Reflection.Emit;
 
 namespace RandomWorlds.Patches {
 
-#if RUNTIME_GENERATION
-
     [HarmonyPatch(typeof(EntityCell), nameof(EntityCell.AwakeAsync))]
-    class EntityCellDebugPatch {
+    class EntityCell_AwakeAsyncPatch {
 
         [HarmonyTranspiler]
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
 
-            var copyMethodInfo = AccessTools.Method(typeof(EntitySpawnManager), nameof(EntitySpawnManager.OnCellRootAwoken));
+            var copyMethodInfo = AccessTools.Method(typeof(EntityProvider), nameof(EntityProvider.OnCellRootAwoken));
             bool foundNewobjInstruction = false;
 
             foreach (CodeInstruction instruction in instructions) {
@@ -29,5 +27,4 @@ namespace RandomWorlds.Patches {
             }
         }
     }
-#endif
 }

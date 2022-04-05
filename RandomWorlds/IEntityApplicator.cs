@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RandomWorlds {
-    public static class DeserializerOverrideInterfaces {
+    public interface IEntityApplicator {
+        void Apply(CellEntities entities);
+        Int3.Bounds GetBatchBounds();
     }
 }

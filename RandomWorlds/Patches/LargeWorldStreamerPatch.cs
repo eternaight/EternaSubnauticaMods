@@ -2,13 +2,11 @@
 
 namespace RandomWorlds.Patches {
 
-#if RUNTIME_GENERATION
     [HarmonyPatch(typeof(LargeWorldStreamer), nameof(LargeWorldStreamer.FinalizeLoadBatchObjectsAsync))]
-    class LargeWorldStreamerPatch {
+    class LargeWorldStreamer_FinalizeLoadBatchObjectsAsyncPatch {
         [HarmonyPrefix]
         public static void Prefix() {
-            EntitySpawnManager.EnterBatchObjectsLoad();
+            EntityProvider.EnterBatchObjectsLoad();
         }
     }
-#endif
 }

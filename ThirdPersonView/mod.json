@@ -2,8 +2,8 @@
   "Id": "ThirdPersonView",
   "DisplayName": "Third Person View",
   "Author": "eterna light",
-  "Version": "0.1",
-  "Enable": true,
+  "Version": "1.0.1",
+  "Enable": false,
   "AssemblyName": "ThirdPersonView.dll",
   "Game": "Subnautica"
 }

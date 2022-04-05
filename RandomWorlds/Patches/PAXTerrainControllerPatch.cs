@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 
 namespace RandomWorlds.Patches {
-    class PAXTerrainControllerPatch {
+    class PAXTerrainController_LoadAsyncPatch {
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase original) {
 
             bool foundLoadTiles = false;
@@ -15,7 +15,7 @@ namespace RandomWorlds.Patches {
 
                 if (instruction.LoadsField(mountResultField) && !foundLoadTiles) {
                     foundLoadTiles = true;
-                    MethodInfo setupWorldMethod = AccessTools.Method(typeof(WorldManager), nameof(WorldManager.InitializeRuntime));
+                    MethodInfo setupWorldMethod = AccessTools.Method(typeof(WorldAssembler), nameof(WorldAssembler.Initialize));
                     yield return new CodeInstruction(OpCodes.Call, setupWorldMethod);
                     yield return instruction;
                 }

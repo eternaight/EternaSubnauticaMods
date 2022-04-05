@@ -7,10 +7,8 @@ using System.Reflection.Emit;
 
 namespace RandomWorlds.Patches {
 
-#if RUNTIME_GENERATION
-
     [HarmonyPatch(typeof(CellManager), nameof(CellManager.LoadCacheBatchCellsFromStream))]
-    class CellManagerPatch {
+    class CellManager_LoadCacheBatchCellsFromStreamPatch {
         [HarmonyTranspiler]
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
 
@@ -28,11 +26,11 @@ namespace RandomWorlds.Patches {
             var callSkip = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ProtobufSerializer), nameof(ProtobufSerializer.SkipDeserialize)));
 
             foreach (CodeInstruction instruction in instructions) {
-                if (instruction.Calls(deserializeFileHeader) && !RandomWorlds.learningMode) {
+                if (instruction.Calls(deserializeFileHeader)) {
                     // pop verbose
                     yield return popInstruction;
                     // pop target
-                    yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(CellManagerPatch), nameof(CellManagerPatch.ConsumeStream)));
+                    yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(CellManager_LoadCacheBatchCellsFromStreamPatch), "ConsumeStream"));
                     // pop stream
                     yield return popInstruction;
                     // pop protobufserializer
@@ -44,15 +42,19 @@ namespace RandomWorlds.Patches {
             }
         }
 
+        private static void ConsumeStream(CellManager.CellsFileHeader cfh) {
+            cfh.numCells = 0;
+        }
+
         [HarmonyPostfix]
         public static void Postfix(BatchCells cells, Stream stream) {
 
             var cfh = new CellManager.CellsFileHeader(); 
-            EntitySpawnManager.FillCellsFileHeader(cfh, cells.batch);
+            EntityProvider.ProvideCellFileHeader(cfh, cells.batch);
 
             var chex = new CellManager.CellHeaderEx();
             for (int i = 0; i < cfh.numCells; i++) {
-                EntitySpawnManager.FillCellHeader(chex, i);
+                EntityProvider.ProvideCellHeader(chex, i);
                 var cellId = BatchCells.GetCellId(chex.cellId, chex.level, cfh.version);
                 var cell = cells.Add(cellId, chex.level);
                 cell.Initialize();
@@ -65,26 +67,15 @@ namespace RandomWorlds.Patches {
                 }
             }
         }
-
-        private static void ConsumeStream(CellManager.CellsFileHeader cfh) {
-            cfh.numCells = 0;
-        }
     }
 
     [HarmonyPatch(typeof(CellManager), nameof(CellManager.TryLoadCacheBatchCells))]
-    class CellManagerPatchTwo {
+    class CellManager_TryLoadCacheBatchCellsPatch {
         [HarmonyPrefix]
         public static bool Prefix(BatchCells cells, ref bool __result) {
-            
-            if (EntitySpawnManager.PrecomputeBatchEntities(cells.batch)) {
-                CellManager.LoadCacheBatchCellsFromStream(cells, null);
-                __result = true;
-            } else {
-                __result = false;
-            }
-            
+            __result = EntityProvider.PrecomputeCellMask(cells.batch);
+            if (__result) CellManager.LoadCacheBatchCellsFromStream(cells, null);
             return false;
         }
     }
-#endif
 }

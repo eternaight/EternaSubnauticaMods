@@ -8,10 +8,9 @@ using System.Linq;
 
 namespace RandomWorlds.Patches {
 
-#if RUNTIME_GENERATION
     [HarmonyPatch(typeof(ProtobufSerializer))]
     [HarmonyPatch("DeserializeIntoGameObject", new Type[] {typeof(Stream), typeof(ProtobufSerializer.GameObjectData), typeof(UniqueIdentifier), typeof(bool), typeof(bool), typeof(UnityEngine.Transform), typeof(int) })]
-    class ProtobufSerializerInstantiationPatch {
+    class ProtobufSerializer_DeserializeIntoGameObjectPatch {
         [HarmonyTranspiler]
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> originalInstructions) {
 
@@ -33,9 +32,9 @@ namespace RandomWorlds.Patches {
             bool foundComponentHeader = false;
             bool foundComponent = false;
             bool foundSetEnabled = false;
-            MethodInfo fillLoop = AccessTools.Method(typeof(EntitySpawnManager), nameof(EntitySpawnManager.FillComponentCount));
-            MethodInfo fillComponent = AccessTools.Method(typeof(EntitySpawnManager), nameof(EntitySpawnManager.FillComponentHeader));
-            MethodInfo processComponent = AccessTools.Method(typeof(EntitySpawnManager), nameof(EntitySpawnManager.ProcessComponent));
+            MethodInfo fillLoop = AccessTools.Method(typeof(EntityProvider), nameof(EntityProvider.FillComponentCount));
+            MethodInfo fillComponent = AccessTools.Method(typeof(EntityProvider), nameof(EntityProvider.FillComponentHeader));
+            MethodInfo processComponent = AccessTools.Method(typeof(EntityProvider), nameof(EntityProvider.ProcessComponent));
 
             var popInstruction = new CodeInstruction(OpCodes.Pop);
             var callSkip = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ProtobufSerializer), nameof(ProtobufSerializer.SkipDeserialize)));
@@ -44,62 +43,42 @@ namespace RandomWorlds.Patches {
                 if (instruction.Calls(deserializeLoopMethod)) 
                 {
                     foundLoopHeader = true;
+                    // pop verbose
+                    yield return popInstruction;
 
-                    if (RandomWorlds.learningMode) {
-                        yield return instruction;
-                        yield return new CodeInstruction(OpCodes.Ldloc_2);
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RandomWorldsJournalist), nameof(RandomWorldsJournalist.LogDeserializedLoop)));
+                    // pop loopHeader
+                    yield return new CodeInstruction(OpCodes.Call, fillLoop);
 
-                    } else {
-
-                        // pop verbose
-                        yield return popInstruction;
-
-                        // pop loopHeader
-                        yield return new CodeInstruction(OpCodes.Call, fillLoop);
-
-                        // pop ProtobufSerializer & stream
-                        yield return callSkip;
-                    }
+                    // pop ProtobufSerializer & stream
+                    yield return callSkip;
                 } else if (instruction.Calls(deserializeComponentHeaderMethod)) {
                     foundComponentHeader = true;
 
-                    if (RandomWorlds.learningMode) {
-                        yield return instruction;
-                        yield return new CodeInstruction(OpCodes.Ldloc_S, 4);
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RandomWorldsJournalist), nameof(RandomWorldsJournalist.LogComponentHeader)));
-                    } else {
-                        // pop verbose
-                        yield return popInstruction;
+                    // pop verbose
+                    yield return popInstruction;
 
-                        // push component index
-                        yield return new CodeInstruction(OpCodes.Ldloc_S, 6);
+                    // push component index
+                    yield return new CodeInstruction(OpCodes.Ldloc_S, 6);
 
-                        // pop componentHeader & index
-                        yield return new CodeInstruction(OpCodes.Call, fillComponent);
+                    // pop componentHeader & index
+                    yield return new CodeInstruction(OpCodes.Call, fillComponent);
 
-                        // pop ProtobufSerializer & stream
-                        yield return callSkip;
-                    }
+                    // pop ProtobufSerializer & stream
+                    yield return callSkip;
                 } else if (instruction.Calls(deserializeComponentMethod)) {
                     foundComponent = true;
 
-                    if (RandomWorlds.learningMode) {
-                        yield return instruction;
-                    } else {
+                    // Pop: ProtobufSerializer, Stream, object, Type, bool
 
-                        // Pop: ProtobufSerializer, Stream, object, Type, bool
+                    // pop bool
+                    yield return popInstruction;
+                    // pop object
+                    yield return popInstruction;
+                    // pop type
+                    yield return popInstruction;
 
-                        // pop bool
-                        yield return popInstruction;
-                        // pop object
-                        yield return popInstruction;
-                        // pop type
-                        yield return popInstruction;
-
-                        // pop ProtobufSerializer & stream
-                        yield return callSkip;
-                    }
+                    // pop ProtobufSerializer & stream
+                    yield return callSkip;
                 } else if (instruction.Calls(setIsEnabled)) 
                 {
                     foundSetEnabled = true;
@@ -127,5 +106,4 @@ namespace RandomWorlds.Patches {
             }
         }
     }
-#endif
 }

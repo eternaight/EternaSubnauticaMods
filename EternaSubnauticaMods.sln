@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomWorlds", "RandomWorld
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThirdPersonView", "ThirdPersonView\ThirdPersonView.csproj", "{0051B315-1756-4DD9-A668-06AE7A32127F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FringingReefEditor", "FringingReefEditor\FringingReefEditor.csproj", "{03274E6A-DEA7-4940-94BB-8A61A0B2625F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0051B315-1756-4DD9-A668-06AE7A32127F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0051B315-1756-4DD9-A668-06AE7A32127F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0051B315-1756-4DD9-A668-06AE7A32127F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03274E6A-DEA7-4940-94BB-8A61A0B2625F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03274E6A-DEA7-4940-94BB-8A61A0B2625F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03274E6A-DEA7-4940-94BB-8A61A0B2625F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03274E6A-DEA7-4940-94BB-8A61A0B2625F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

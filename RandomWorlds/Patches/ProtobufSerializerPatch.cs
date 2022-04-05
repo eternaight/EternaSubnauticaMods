@@ -20,8 +20,8 @@ namespace RandomWorlds.Patches {
             bool foundLoopHeader = false;
             bool foundGoData = false;
 
-            var loopHeaderMod = AccessTools.Method(typeof(EntitySpawnManager), nameof(EntitySpawnManager.FillGameObjectCount));
-            var gameObjectDataMod = AccessTools.Method(typeof(EntitySpawnManager), nameof(EntitySpawnManager.FillDataForGameObject));
+            var loopHeaderMod = AccessTools.Method(typeof(EntityProvider), nameof(EntityProvider.FillGameObjectCount));
+            var gameObjectDataMod = AccessTools.Method(typeof(EntityProvider), nameof(EntityProvider.FillDataForGameObject));
 
             var popInstruction = new CodeInstruction(OpCodes.Pop);
             var callSkip = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ProtobufSerializer), nameof(ProtobufSerializer.SkipDeserialize)));
@@ -30,52 +30,33 @@ namespace RandomWorlds.Patches {
                 if (instruction.Calls(deserializeLoopMethod)) 
                 {
                     foundLoopHeader = true;
-
-                    if (RandomWorlds.learningMode) {
-                        yield return instruction;
-                        // push loopHeader
-                        yield return new CodeInstruction(OpCodes.Ldloc_2);
-                        // pop & print loopHeader
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RandomWorldsJournalist), nameof(RandomWorldsJournalist.LogDeserializedLoop)));
-                    } else {
-                        // pop verbose
-                        yield return popInstruction;
-                        // Pop loop header by filling it with data
-                        yield return new CodeInstruction(OpCodes.Call, loopHeaderMod);
-                        // Pop ProtobufSerializer & stream by skipping deserialization
-                        yield return callSkip;
-                        // should be done!
-                    }
+                    // pop verbose
+                    yield return popInstruction;
+                    // Pop loop header by filling it with data
+                    yield return new CodeInstruction(OpCodes.Call, loopHeaderMod);
+                    // Pop ProtobufSerializer & stream by skipping deserialization
+                    yield return callSkip;
+                    // should be done!
                 } 
                 else if (instruction.Calls(deserializeGameObjectMethod)) 
                 {
                     foundGoData = true;
                     var iteratorType = typeof(ProtobufSerializer).GetNestedType("<DeserializeObjectsAsync>d__32", AccessTools.all);
+                    // pop verbose
+                    yield return popInstruction;
 
-                    if (RandomWorlds.learningMode) {
-                        yield return instruction;
+                    //var goDataField = AccessTools.Field(iteratorType, "<gameObjectData>5__3");
+                    var goIndexField = AccessTools.Field(iteratorType, "<i>5__4");
 
-                        yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(iteratorType, "<gameObjectData>5__3"));
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RandomWorldsJournalist), nameof(RandomWorldsJournalist.LogDeserializedGOData)));
-                    } else {
+                    // push go index
+                    yield return new CodeInstruction(OpCodes.Ldarg_0);
+                    yield return new CodeInstruction(OpCodes.Ldfld, goIndexField);
+                    // pop goData & index 
+                    yield return new CodeInstruction(OpCodes.Call, gameObjectDataMod);
 
-                        // pop verbose
-                        yield return popInstruction;
-
-                        //var goDataField = AccessTools.Field(iteratorType, "<gameObjectData>5__3");
-                        var goIndexField = AccessTools.Field(iteratorType, "<i>5__4");
-
-                        // push go index
-                        yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Ldfld, goIndexField);
-                        // pop goData & index 
-                        yield return new CodeInstruction(OpCodes.Call, gameObjectDataMod);
-
-                        // Pop ProtobufSerializer & stream by skipping deserialization
-                        yield return callSkip;
-                        // should be done!
-                    }
+                    // Pop ProtobufSerializer & stream by skipping deserialization
+                    yield return callSkip;
+                    // should be done!
                 } else 
                 {
                     yield return instruction;
@@ -92,10 +73,13 @@ namespace RandomWorlds.Patches {
     }
 
     [HarmonyPatch(typeof(ProtobufSerializer), nameof(ProtobufSerializer.TryDeserializeStreamHeader))]
-    class ProtobufSerializerPatchTwo {
+    class ProtobufSerializer_TryDeserializeStreamHeaderPatch {
+
+        public static bool ignoreHeader;
+        
         [HarmonyPrefix]
         public static bool Prefix(ref bool __result) {
-            if (RandomWorlds.ignoreHeader) {
+            if (ignoreHeader) {
                 __result = true;
                 return false;
             }

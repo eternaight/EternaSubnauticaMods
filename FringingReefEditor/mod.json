@@ -1,0 +1,9 @@
+{
+  "Id": "FringingReefEditor",
+  "DisplayName": "Fringing Reef Editor",
+  "Author": "eterna light",
+  "Version": "0.1",
+  "Enable": true,
+  "AssemblyName": "FringingReefEditor.dll",
+  "Game": "Subnautica"
+}
